@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using Unity.Netcode;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : NetworkBehaviour
 {
     // Class level variables
     private Rigidbody rbPlayer;
@@ -14,28 +15,24 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField]
     private ForceMode forceMode;
-    public GameObject spawnPoint;
-
-    // Dictionary where the key value pairs are the Vegetable Type and the count
-    private Dictionary<Item.VegetableType, int> inventory = new Dictionary<Item.VegetableType, int>();
-
-
+    public GameObject[] spawnPoints;
 
     // Start is called before the first frame update
     void Start()
     {
         rbPlayer = GetComponent<Rigidbody>();
+        spawnPoints = GameObject.FindGameObjectsWithTag("Respawn");
 
-        // populate inventory dictionary with vegetable types and their counts
-        // System.Enum.GetValues looks at the code to find enum values (reflection)
-        foreach (Item.VegetableType type in System.Enum.GetValues(typeof(Item.VegetableType)))
-        {
-            inventory.Add(type, 0);
-        }
+        Respawn();
     }
 
     void Update()
     {
+        if (!IsLocalPlayer)
+        {
+            return;
+        }
+
         // local variables - they're local to Update, but not to other methods
         float horizontalVelocity = Input.GetAxis("Horizontal");
         float verticalVelocity = Input.GetAxis("Vertical");
@@ -46,7 +43,23 @@ public class PlayerController : MonoBehaviour
     // Fixed Update is called once per frame. along with the Unity's Physics Engine
     void FixedUpdate()
     {
-        rbPlayer.AddForce(direction * forceMultiplier, forceMode);
+        if (!IsLocalPlayer)
+        {
+            return;
+        }
+
+        if (IsServer)
+        {
+            Move(direction);
+        }
+        else
+        {
+            MoveRpc(direction);
+        }
+    }
+    private void Move(Vector3 input)
+    {
+        rbPlayer.AddForce(input * forceMultiplier, forceMode);
 
         // rbPlayer.AddForce(new Vector3(horizontalVelocity, 0f, verticalVelocity), ForceMode.Impulse);
 
@@ -62,36 +75,32 @@ public class PlayerController : MonoBehaviour
             transform.position = new Vector3(transform.position.x, transform.position.y, -38);
         }
     }
-    private void Respawn()
+
+    // Remote Procedural Calls
+    // These Methods are requesting the server to call the procedure
+    [Rpc(SendTo.Server)]
+    public void MoveRpc(Vector3 input)
     {
-        rbPlayer.MovePosition(spawnPoint.transform.position);
-    }
-    private void OnTriggerEnter(Collider collider)
-    {
-        if (collider.CompareTag("Item"))
-        {
-            Item item = collider.gameObject.GetComponent<Item>();   
-            AddItemToInventory(item);
-            PrintInventory();
-        }
-    }
-    private void AddItemToInventory(Item item)
-    {
-        inventory[item.typeOfVeggie]++;
+        Move(input);
     }
 
-    private void PrintInventory()
+    private void Respawn()
     {
-        string output = "";
-        foreach (KeyValuePair<Item.VegetableType, int> pair in inventory)
+        int index = 0;
+        while (Physics.CheckBox(spawnPoints[index].transform.position, new Vector3(1.0f, 1.0f, 1.0f)))
         {
-            output += string.Format("{0}: {1}; ", pair.Key, pair.Value);
+            index++;
         }
-        Debug.Log(output);
+        rbPlayer.MovePosition(spawnPoints[index].transform.position);
     }
  
     private void OnTriggerExit(Collider other)
     {
+        if (!IsServer)
+        {
+            return;
+        }
+
         if (other.CompareTag("Hazard"))
         {
             Respawn();
