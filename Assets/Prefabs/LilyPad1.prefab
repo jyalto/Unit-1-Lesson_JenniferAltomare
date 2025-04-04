@@ -12,13 +12,13 @@ GameObject:
   - component: {fileID: 6487477401401532234}
   - component: {fileID: 1188930204739952697}
   - component: {fileID: 5755739257611332389}
-  - component: {fileID: 7119228967077802318}
   - component: {fileID: -6263385420264860638}
+  - component: {fileID: 7119228967077802318}
   - component: {fileID: -7361183596334142553}
   m_Layer: 0
   m_Name: LilyPad1
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 5132851093641282708, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -108,20 +108,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &7119228967077802318
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5426728315120250831}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5cef723b438642d47b9b272ffae7e4c0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 10
-  driftDirection: -1
 --- !u!114 &-6263385420264860638
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -143,6 +129,20 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
+--- !u!114 &7119228967077802318
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5426728315120250831}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5cef723b438642d47b9b272ffae7e4c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 10
+  driftDirection: -1
 --- !u!114 &-7361183596334142553
 MonoBehaviour:
   m_ObjectHideFlags: 0
