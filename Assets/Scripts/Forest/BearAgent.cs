@@ -37,5 +37,6 @@ public class BearAgent : MonoBehaviour
     void OnHiveDrop(Vector3 position)
     {
         hiveDropped = true;
+        hivePosition = position;    
     }
 }
